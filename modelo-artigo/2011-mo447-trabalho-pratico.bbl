@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+
+\bibitem{Ni_2008}
+Kai Ni, Anitha Kannan, Antonio Criminisi, and John Winn.
+\newblock Epitomic location recognition.
+\newblock In {\em Proceedings of the IEEE Computer Society Conference on
+  Computer Vision and Pattern Recognition (CVPR)}, Anchorage, AK, USA, 2008.
+
+\bibitem{Ni_2009}
+Kai Ni, Anitha Kannan, Antonio Criminisi, and John Winn.
+\newblock Epitomic location recognition.
+\newblock {\em Transactions on Pattern Analysis and Machine Intelligence
+  (TPAMI)}, 31(12):2158--2167, 2009.
+
+\bibitem{Silva_2010}
+Fulano Silva and Beltrano Souza.
+\newblock Hey! this is my paper.
+\newblock In {\em European Conference on Nothing (ECN)}, pages 000--007, Graz,
+  Austria, 2010.
+
+\bibitem{Silva_2010b}
+Fulano Silva.
+\newblock A paper on everything useless.
+\newblock In {\em European Conference on Nothing (ECN)}, pages 008--014, Graz,
+  Austria, 2010.
+
+\bibitem{Silva_2010c}
+Fulano Silva, Beltrano Souza, and Sicrano Rocha.
+\newblock Revisiting the classical publishing problem.
+\newblock In {\em European Conference on Nothing (ECN)}, pages 015--021, Graz,
+  Austria, 2010.
+
+\end{thebibliography}

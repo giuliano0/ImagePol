@@ -1,0 +1,142 @@
+%  ABACO -- Conjunto de macros para desenhar o 'abaco
+%  Desenho original de Hans Liesenberg
+%  Macros de Tomasz Kowaltowski
+%  DCC -- IMECC -- UNICAMP
+%  Mar,co de 1988  --  Vers~ao 1.0
+% Ajustado para LaTeX da SUN -- Mar,co de 1991
+% ---------------------------------------------------------
+%  Chamada:   \ABACO{d1}{d2}{d3}{d4}{esc}
+%             com:  di's -- os quatro d'igitos;
+%                   esc  -- fator de escala
+% ---------------------------------------------------------
+%  DEFINI,C~OES AUXILIARES
+% ---------------------------------------------------------
+%  Forma o d'igito pequeno (0 ou 1)
+
+\newcommand{\ABACODP}[1]{%
+%
+\thicklines
+%    
+\begin{picture}(8,0)
+    \ifcase#1{   %  caso 0
+       \put(0,0)    {\line(1,0){4}}
+       \multiput(5,0)(2,0){2}{\oval(2,4)}}
+    \or{         %  caso 1
+       \put(2,0)    {\line(1,0){4}}
+       \multiput(1,0)(6,0){2}{\oval(2,4)}}
+    \fi
+\end{picture}
+    } % \ABACODP
+
+% Forma o d'igito grande (0 a 4)
+
+\newcommand{\ABACODG}[1]{%
+%
+\thicklines
+%    
+\begin{picture}(14,0)
+    \ifcase#1{   % caso 0
+       \multiput(1,0)(2,0){5}{\oval(2,4)}}
+       \put(10,0)   {\line(1,0){4}}
+    \or{         % caso 1
+       \multiput(1,0)(2,0){4}{\oval(2,4)}}
+       \put(8,0)   {\line(1,0){4}}
+       \put(13,0)   {\oval(2,4)}
+    \or{         % caso 2
+       \multiput(1,0)(2,0){3}{\oval(2,4)}
+       \put(6,0)   {\line(1,0){4}}
+       \multiput(11,0)(2,0){2}{\oval(2,4)}}
+    \or{         % caso 3
+       \multiput(1,0)(2,0){2}{\oval(2,4)}
+       \put(4,0)   {\line(1,0){4}}
+       \multiput(9,0)(2,0){3}{\oval(2,4)}}
+    \or{         % caso 4
+       \put(1,0)  {\oval(2,4)}}
+       \put(2,0)   {\line(1,0){4}}
+       \multiput(7,0)(2,0){4}{\oval(2,4)}
+    \fi
+\end{picture}
+    } % \ABACODG
+       
+% Forma um d'igito (0 a 9)
+
+\newcommand{\ABACOD}[1]{%
+%
+    \ifnum#1>9
+       \errmessage{#1: Argumento invalido para ABACO}
+    \fi
+    \ifnum#1<0
+       \errmessage{#1: Argumento invalido para ABACO}
+    \fi
+%
+\begin{picture}(24,0)
+%    
+    \ifnum#1<5
+       \put(16,0) {\ABACODP{0}}
+    \else   
+       \put(16,0) {\ABACODP{1}}
+    \fi
+%    
+    \ifnum#1<5
+       \put(0,0)  {\ABACODG{#1}}
+    \else
+       \ifcase#1\or \or \or \or
+          \or  \put(0,0)  {\ABACODG{0}}
+          \or  \put(0,0)  {\ABACODG{1}}
+          \or  \put(0,0)  {\ABACODG{2}}
+          \or  \put(0,0)  {\ABACODG{3}}
+          \or  \put(0,0)  {\ABACODG{4}}
+       \fi
+    \fi   
+\end{picture}
+    } % \ABACOD
+    
+% -------------------------------------------------
+
+%  DEFINI,C~AO PRINCIPAL
+    
+\newcommand{\ABACO}[5]{%
+    \setlength{\unitlength}{#5mm}
+%
+    \thinlines
+%   
+\begin{picture}(28,25)
+%   
+% moldura
+%
+% externa
+%
+        \put(0,0)            {\line(0,1){25}}
+        \put(0,0)            {\line(1,0){28}}
+        \put(28,0)           {\line(0,1){25}}
+        \put(0,25)           {\line(1,0){28}}
+% interna
+        \put(2,2)            {\line(0,1){21}}
+        \put(26,2)           {\line(0,1){21}}
+        \put(16,2)           {\line(0,1){21}}
+        \put(18,2)           {\line(0,1){21}}
+        \put(2,2)            {\line(1,0){14}}
+%        \put(16,2)           {\line(1,-1){1}}
+%        \put(17,1)           {\line(1,1){1}}
+        \put(18,2)           {\line(1,0){8}}
+        \put(2,23)           {\line(1,0){14}}
+%        \put(16,23)          {\line(1,1){1}}
+%       \put(17,24)          {\line(1,-1){1}}
+        \put(18,23)          {\line(1,0){8}}
+%        \put(0,0)            {\line(1,1){2}}
+%        \put(0,25)           {\line(1,-1){2}}
+%        \put(28,0)           {\line(-1,1){2}}
+%        \put(28,25)          {\line(-1,-1){2}}
+%
+%   
+% d'igitos
+%
+%   
+       \put(2,20)  {\ABACOD{#1}}
+       \put(2,15)  {\ABACOD{#2}}
+       \put(2,10)  {\ABACOD{#3}}
+       \put(2,5)   {\ABACOD{#4}}
+%      
+\end{picture}
+    } % \ABACO
+    

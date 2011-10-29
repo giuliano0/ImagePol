@@ -1,0 +1,131 @@
+%%% PREAMBLE - Do not touch %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[ansinew]{inputenc}
+\usepackage[portuges,brazil,english]{babel}
+\usepackage{model}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
+\input{pics/abaco}
+
+\cvprfinalcopy % *** Uncomment this line for the final submission
+\def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
+\ifcvprfinal\pagestyle{empty}\fi
+
+\newcommand{\TODO}[1]{TODO: #1}
+\newcommand{\CITEONE}[2]{\mbox{#1 \cite{#2}}}
+\newcommand{\CITETWO}[3]{\mbox{#1 and #2 \cite{#3}}}
+\newcommand{\CITEN}[2]{\mbox{#1 et al. \cite{#2}}}
+
+%%% Paper beginning %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%%% Title and authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Here goes the paper title}
+\author{Fulano da Silva\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{fulano@ic.unicamp.br}}\\
+Fulano da Silva\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{fulano@ic.unicamp.br}}\\
+Anderson Rocha\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{anderson.rocha@ic.unicamp.br}}
+}
+
+%%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\maketitle
+\begin{abstract}
+Here goes the abstract. 
+\end{abstract}
+
+%%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+Here goes the introduction and motivation of the work.
+
+Some directions for the paper:
+
+\begin{itemize}
+	\item Diagrams and figures are encouraged for making the paper richer
+	\item The sections proposed here are not hard-constrained. It means, you 
+	can propose other sections as well as change the existing ones. 
+\end{itemize}
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{State-of-the-Art}
+Here goes the state-of-the-art research (talk about prior work for solving the same problem). 
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Proposed Solution}
+Talk about the proposed solution for the selected problem. 
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiments and Discussion}
+Talk about the experiments carried out and the obtained results. 
+
+Examples of citations~\cite{Ni_2008, Ni_2009}. For direct citations use something like: 
+
+\CITEONE{Silva}{Silva_2010} for papers with one author.
+\CITETWO{Silva}{Souza}{Silva_2010b} for papers with two authors.
+\CITEN{Silva}{Silva_2010c} for papers with three or more authors.
+
+Example of a figure of one column. 
+\begin{figure}
+\begin{center}
+	\includegraphics[width=0.99\columnwidth]{pics/example-figure}
+	\caption{A figure example spanning one column only.\label{fig:label}}   
+\end{center} 
+\end{figure}   
+
+Example of a figure spanning two columns. 
+\begin{figure*}
+\begin{center}
+	\includegraphics[width=0.99\textwidth]{pics/example-figure-spanned}
+	\caption{A figure example spanning two columns.\label{fig:label2}}   
+\end{center} 
+\end{figure*}
+
+Example of a table spanning only one column: 
+
+\begin{table}
+\begin{center}
+\begin{tabular}{l*{6}{c}r}
+Team              & P & W & D & L & F  & A & Pts \\
+\hline
+Manchester United & 6 & 4 & 0 & 2 & 10 & 5 & 12  \\
+Celtic            & 6 & 3 & 0 & 3 &  8 & 9 &  9  \\
+Benfica           & 6 & 2 & 1 & 3 &  7 & 8 &  7  \\
+FC Copenhagen     & 6 & 2 & 1 & 2 &  5 & 8 &  7  \\
+\end{tabular}
+\end{center}
+\end{table}
+
+Example of a table spanning two columns: 
+
+\begin{table*}
+\begin{center}
+    \begin{tabular}{ | l | l | l | p{8cm} |}
+    \hline
+    Day & Min Temp & Max Temp & Summary \\ \hline
+    Monday & 11C & 22C & A clear day with lots of sunshine.  
+    However, the strong breeze will bring down the temperatures. \\ \hline
+    Tuesday & 9C & 19C & Cloudy with rain, across many northern regions. Clear spells
+    across most of Scotland and Northern Ireland,
+    but rain reaching the far northwest. \\ \hline
+    Wednesday & 10C & 21C & Rain will still linger for the morning.
+    Conditions will improve by early afternoon and continue
+    throughout the evening. \\
+    \hline
+    \end{tabular}
+\end{center}    
+\end{table*}
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions and Future Work}
+Present the main conclusions of the work as well as some future directions for other people interested in continuing this work. 
+
+%%% References %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\small
+\bibliographystyle{unsrt}
+\bibliography{referencias-exemplo}
+}
+
+\end{document}
