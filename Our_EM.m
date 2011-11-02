@@ -1,7 +1,9 @@
 clear;
 
-N = 3; % tamanho da vizinhança
 L = 10; % tamanho da imagem aleatória (quadrada por enquanto)
+N = 1; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é a cardinalidade do conjunto formado no intervalo)
+alpha = rand(N, N);
+alpha(ceil(N/2), ceil(N/2)) = 0; % o termo do meio da vizinhança deve ser 0 (eu acho =P)
 alpha_new = [];
 r = [];
 w = [];
@@ -18,31 +20,46 @@ f = 255 * (f / max(max(f)));
 % TODO
 
 % parâmetros do EM
-alpha = rand(N, N);
-alpha(ceil(N/2), ceil(N/2)) = 0; % o termo do meio da vizinhança deve ser 0 (eu acho =P)
 sigma = 0.005; % variancia da gaussiana
-delta = 10; % delta uniforme
+delta = 1/(max(max(f)) - min(min(f))); % delta uniforme; mais tarde, delta é invertido, representa Pr{f(x,y)|f(x,y) pert. M2}
 
 while (1)
     % Passo E
-
-    % calcula o erro e a probabilidade
-    for x = 2:L-N
-        for y = 2:L-N
-            % calcula o h4x_term, que é subtraido em cada iteração abaixo e
-            % portanto vale a pena ser calculado de uma vez
-            for u = 1:N
-                for v = 1:N
-                    h4x_term(x, y) = alpha(u, v) * f(x + u, y + v);
+    
+    % calcula-se a probabilidade de cada valor f(x,y) pertencer ao modelo
+    % M1, usando a regra de Bayes. esse passo se resume a calcular a
+    % probabilidade para M1 e M2, somá-las, e dividir a prob. de 1 pelo
+    % resultado.
+    
+    for x = 1+N:L-N
+        for y = 1+N:L-N
+            % Cálculo do residual r
+            % Primeiro, calculamos o somatório interno
+            for u = -N:N
+                for v = -N:N
+                    r(x, y) = alpha(u, v) * f(x + u, y + v);
                 end
             end
+           
+            % e então subtraímos essa soma de cada f(x,y)
+            r(x, y) = f(x, y) - r(x, y);
+            % Fim do cálculo do residual
             
-            r(x, y) = f(x, y) - h4x_term(x, y);
-            temp = exp(-r(x, y)^2 / sigma);
-            w(x, y) = temp / (temp + 1 / delta);
-            clear temp;
+            % Cálculo da probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
+            % SPEEDUP: colocar sqrt(2*pi) em constante fora do while ou
+            % 1/sigma... em constante dentro do while. O mesmo para
+            % -1/sigma^2.
+            P(x, y) =  (1 / (sigma * sqrt(2*pi))) * ((-1 / (2 * sigma^2)) * r(x, y)^2);
+            % Fim do cálculo da probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
+            
+            % Cálculo da probabilidade Pr{f(x,y) | f(x,y) pert. M1}
+            w(x, y) = P(x, y) / (P(x, y) + 1/delta);
+            % Fim do cálculo da probabilidade Pr{f(x,y) | f(x,y) pert. M1}
         end
     end
+    
+    % Passo M again
+    % TODO
     
     % Passo M
     M = [f(1:L-2, 1:L-2)' f(3:L, 3:L)'];

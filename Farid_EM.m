@@ -42,12 +42,12 @@ while (1)
     drawnow; pause(0.25); % manda desenhar os plots e pausa um tempo entre os cálculos
 
     %%% M-STEP
-    M = [g(1:N-2)' g(3:N)']; % faz uma matriz M 9x2 com os elementos do sinal g transpostos (para virarem uma coluna)
-    b = g(2:N-1)'; % monta um vetor-coluna com 8 elementos, do segundo ao penúltimo do sinal g
+    M = [g(1:N-2)' g(3:N)'];
+    b = g(2:N-1)';
     r = r(2:end); % remove edge point;
     w = w(2:end); % remove edge point
     W = diag(w); % constrói uma matrix W pondo os elementos do vetor w como elementos de sua diagonal e zerando o resto
-    alpha_new = inv(M'*W*M)*M'*W*b; % WLS  % [Giu]: Esse passo é algelin do inferno
+    alpha_new = inv(M'*W*M)*M'*W*b; % WLS
     
     if (norm(alpha - alpha_new) < 0.01) % define o critério de parada do while
         break; % STOPPING CONDITION
