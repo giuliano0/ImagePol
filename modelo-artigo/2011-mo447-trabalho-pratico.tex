@@ -1,7 +1,7 @@
 %%% PREAMBLE - Do not touch %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[10pt,twocolumn,letterpaper]{article}
-\usepackage[ansinew]{inputenc}
-\usepackage[portuges,brazil,english]{babel}
+\usepackage[portuges]{babel}
+\usepackage[latin1]{inputenc}
 \usepackage{model}
 \usepackage{times}
 \usepackage{epsfig}
@@ -25,102 +25,134 @@
 \begin{document}
 
 %%% Title and authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Here goes the paper title}
-\author{Fulano da Silva\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{fulano@ic.unicamp.br}}\\
-Fulano da Silva\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{fulano@ic.unicamp.br}}\\
+\title{O que os olhos não veem \\ \large Estudo de um algorítimo para detectar imagens digitais manipuladas}
+\author{ André Guaraldo\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra101487@students.ic.unicamp.br}}\\
+Giuliano Pinheiro\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra108579@students.ic.unicamp.br}}\\
+Oscar Esgalha\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra108231@students.ic.unicamp.br}}\\
 Anderson Rocha\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{anderson.rocha@ic.unicamp.br}}
 }
 
 %%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \maketitle
 \begin{abstract}
-Here goes the abstract. 
+Imagens digitais fazem parte do cotidiano de muitas pessoas, raras são as que não
+possuem acesso à essa tecnologia. Devido à essa ubiquidade, cresce, em ritmo acelerado, a qualidade
+dos \textit{softwares} de edição de imagens, bem como as técnicas para a manipulação 
+das mesmas. Em uma realidade na qual uma imagem pode servir de prova em um caso jurídico,
+é importante haver meios para se identificar imagens fraudulentas para garantir a integridade
+do caso. A evolução das fraudes, impossibilita, muitas vezes, essa identificação
+simplesmente através da observação, mesmo para olhos treinados. É necessário o desenvolvimento
+de algorítimos para esse fim. O nosso trabalho implementa e testa um algorítimo para 
+identificar imagens alteradas por \textit{resampling} (i.e rotação, redimensão) proposto
+por \CITEONE{Popescu}{Popescu_2004} e tenta melhorá-lo.
 \end{abstract}
 
 %%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
-Here goes the introduction and motivation of the work.
+\section{Introdução}
+No passado, quando existiam apenas imagens analógicas, manipular imagens exigia
+técnicas manuais complexas, muito tempo, cuidado e paciência de quem o fosse fazer. 
+O simples ato de remover uma pessoa de uma foto exigia uma grande quantidade de 
+trabalho e de tempo (muitas horas, às vezes dias) na sala escura. 
+Em vista disso manipulações de imagens eram raras e, muitas vezes, 
+limitada à operações governamentais ou militares. \cite{Rocha_Goldenstein_2010}
 
-Some directions for the paper:
+Nos últimos anos, todavia, computadores e câmeras digitais ficaram cada vez melhores e mais acessíveis,
+bem como \textit{softwares} de edição de imagens, (\textit{Adobe Photoshop} e \textit{GNU Gimp}\footnote{Adobe Photoshop e GNU Gimp são softwares registrados com suas respectivas licenças por seus respectivos autores}, por exemplo). \cite{Popescu_2004} Atualmente muitas pessoas possuem acesso à 
+imagens digitais e manipulá-las pode ser feito por qualquer um em poucos minutos. Com um mínimo 
+de técnica em um software de edição, uma pessoa pode alterar significativamente uma imagem, em poucos minutos, de modo que isso não seja perceptível à olho nu.
 
-\begin{itemize}
-	\item Diagrams and figures are encouraged for making the paper richer
-	\item The sections proposed here are not hard-constrained. It means, you 
-	can propose other sections as well as change the existing ones. 
-\end{itemize}
+O uso de tais softwares para fins banais, como correção de iluminação, remoção de olhos vermelhos, 
+entre outros, não interessa à computação forense. Entratanto, a partir do momento em que uma 
+manipulação de imagem tem algum objetivo malicioso, é de grande interesse conseguir confirmar a
+autenticidade da imagem. A facilidade em manipular imagens, diminuiu a credibilidade da mesma 
+nos tribunais. \cite{Fridrich_03} Em um caso jurídico no qual a evidência mais forte para inocentar 
+ou criminalizar uma pessoa seja uma imagem, é necessário conseguir separar as fraudes de imagens 
+autênticas.
 
-%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{State-of-the-Art}
-Here goes the state-of-the-art research (talk about prior work for solving the same problem). 
-
-%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Proposed Solution}
-Talk about the proposed solution for the selected problem. 
-
-%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Experiments and Discussion}
-Talk about the experiments carried out and the obtained results. 
-
-Examples of citations~\cite{Ni_2008, Ni_2009}. For direct citations use something like: 
-
-\CITEONE{Silva}{Silva_2010} for papers with one author.
-\CITETWO{Silva}{Souza}{Silva_2010b} for papers with two authors.
-\CITEN{Silva}{Silva_2010c} for papers with three or more authors.
-
-Example of a figure of one column. 
 \begin{figure}
 \begin{center}
-	\includegraphics[width=0.99\columnwidth]{pics/example-figure}
-	\caption{A figure example spanning one column only.\label{fig:label}}   
+	\includegraphics[width=0.99\columnwidth]{pics/walski_la-times-composite}
+	\caption{Fotos originais (esquerda) e imagem manipulada (direita) por Brian Walski.}   
 \end{center} 
-\end{figure}   
+\end{figure}
 
-Example of a figure spanning two columns. 
-\begin{figure*}
+Imagens fraudadas também aparecem na mídia, com o intuito de mostrar uma situação sob outra 
+perspectiva, como aconteceu com o fotógrafo Brian Walski em 2003 no jornal \textit{Los Angeles Times}. \cite{Rocha_Goldenstein_2010} Como pode ser observado na \textbf{Figura 1}, na montagem à direita o soldado britânico parece estar orientando um  iraquiano com uma criança no colo, mas, como pode ser visto nas imagens originais, à esquerda, esse momento nunca aconteceu. Assim que a fraude foi descoberta, o fotógrafo foi demitido.
+
+Outro exemplo, é o caso da ficha criminal de Dilma Rousseff, que no dia 5 de abril de 2009 saiu no jornal Folha de São Paulo (ver Figura 2). Segundo a ficha, a então chefe de estado, teve participação ativa na resistência durante o regime militar, planejando roubos e sequestros. Foi afirmado que o documento vinha do arquivo público de São Paulo, portanto, que era autentico. Entretanto, uma análise forense realizada na imagem revelou que a imagem da ficha não provinha de um scanner, além de possuir outras características típicas de imagens criadas em computador, counclui-se que a ficha era falsa. \cite{Rocha_et_al_2011}
+\begin{figure}
 \begin{center}
-	\includegraphics[width=0.99\textwidth]{pics/example-figure-spanned}
-	\caption{A figure example spanning two columns.\label{fig:label2}}   
+	\includegraphics[width=0.99\columnwidth]{pics/Dilma}
+	\caption{Falsa ficha criminal da então chefe de estado Dilma Rousseff no jornal Folha de São Paulo.}   
 \end{center} 
-\end{figure*}
+\end{figure}
 
-Example of a table spanning only one column: 
+Além de imagens serem fraudadas para alimentar o sensacionalismo da mídia, é comum, em época de eleições
+principalmente, surgirem imagens fraudadas com políticos em situações não louváveis ou se encontrando
+com pessoas odiadas pelo público, com o intuito de denegrir a imagem do candidato. Inúmeros são os casos, já foi visto Bill Clinton cumprimentando Saddam Hussein \cite{Fridrich_03}, Sarah Palin segurando um fuzil em frente à uma piscina \cite{Rocha_Goldenstein_2010}, George W Bush e Luís Inácio Lula da Silva lendo livros de cabeça para baixo, entre outros.
 
-\begin{table}
-\begin{center}
-\begin{tabular}{l*{6}{c}r}
-Team              & P & W & D & L & F  & A & Pts \\
-\hline
-Manchester United & 6 & 4 & 0 & 2 & 10 & 5 & 12  \\
-Celtic            & 6 & 3 & 0 & 3 &  8 & 9 &  9  \\
-Benfica           & 6 & 2 & 1 & 3 &  7 & 8 &  7  \\
-FC Copenhagen     & 6 & 2 & 1 & 2 &  5 & 8 &  7  \\
-\end{tabular}
-\end{center}
-\end{table}
-
-Example of a table spanning two columns: 
-
-\begin{table*}
-\begin{center}
-    \begin{tabular}{ | l | l | l | p{8cm} |}
-    \hline
-    Day & Min Temp & Max Temp & Summary \\ \hline
-    Monday & 11C & 22C & A clear day with lots of sunshine.  
-    However, the strong breeze will bring down the temperatures. \\ \hline
-    Tuesday & 9C & 19C & Cloudy with rain, across many northern regions. Clear spells
-    across most of Scotland and Northern Ireland,
-    but rain reaching the far northwest. \\ \hline
-    Wednesday & 10C & 21C & Rain will still linger for the morning.
-    Conditions will improve by early afternoon and continue
-    throughout the evening. \\
-    \hline
-    \end{tabular}
-\end{center}    
-\end{table*}
+Neste documento será estudado um método para conseguir separar imagens suspeitas de fraudes, de imagens
+autênticas e, no caso da imagem suspeita, apontar as regiões da imagem que provavelmente foram 
+adulteradas. O método, originalmente proposto por \CITEONE{Popescu}{Popescu_2004}, identifica
+imagens alteradas através de uma técnica conhecida como \textit{resampling}, na qual uma imagem ou
+um pedaço de imagem é rotacionado, redimensionado ou realocado de posição. Utilizando essa técnica,
+é possível remover ou multiplicar objetos de uma foto.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusions and Future Work}
-Present the main conclusions of the work as well as some future directions for other people interested in continuing this work. 
+\section{Estado da Arte}
+Recentemente, muito esforço vem sendo colocado para resolver o problema de identificação de
+imagens digitais fraudulentas. Cada método foca em diferentes características que podem ser
+avaliadas para se tentar verificar a autenticidade de uma imagem. Algumas técnicas, tentam
+separar imagens naturais de imagens geradas por computador, uma delas propõe fazer isso
+analisando características físicas da imagem, que se mostrou melhor do que analisar se
+a imagem possui características de desenhos. \cite{Ng_2005} 
+
+O método proposto por \CITEN{Fridrich}{Fridrich_03} detecta imagens alteradas por cópia e colagem,
+e revela onde estão as regiões copiadas. A técnica simples, porém robusta, consiste em ir comparando
+blocos de pixels da imagem de dois modos diferentes, no primeiro, comparando se os blocos são 
+exatamente iguais, no segundo utilizando a transformada discreta do cosseno para fazer comparações aproximadas, e assim, tolerar possíveis ruídos ou alterações na imagem. 
+Apesar da precisão, o custo da técnica aumenta muito para imagens com grande grande quantidade de pixels.
+
+\CITEN{Lint}{Lint_et_al_2005} propõe uma técnica que compara blocos de pixels em bordas na imagem,
+tentando identificar uma função resposta da câmera e verificando se os resultados das comparações
+batem. A função resposta de uma câmera consiste em uma função matemática que faz uma aproximação
+de cores em bordas com contrastes (por exemplo, na borda da imagem entre uma árvore e um céu de fundo),
+tal aproximação é necessária devido à limitação da resolução de uma câmera digital. Comparando-se
+as funções usadas para gerar as cores nas bordas, ao se encontrar alguma região que parece usar
+uma função muito diferente pode-se suspeitar de uma montagem. Essa técnica não é muito eficiente
+em imagens nas quais as bordas não tenham alto contraste.
+
+Para o caso em que o problema é saber se uma determinada imagem veio de uma determinada câmera
+e não sofreu nenhum tipo de operação, \CITEN{Swaminathan}{Swaminathan_2008} propõe uma solução
+que avalia uma foto que com certeza foi obtida pela câmera e dessa foto extrai informações de
+processamento de imagem, única daquela câmera, a digital (\textit{fingerprint}) da câmera e
+repete o processo na imagem dada. Caso as digitais não estejam batendo, suspeita-se de uma
+fraude.
+
+\CITEONE{Popescu}{Popescu_2004}, em sua tese de doutorado, propõe diversos métodos estatísticos
+para se identificar se uma imagem é verdadeira. Dentre eles está o método para identificar manipulações
+por \textit{resampling} no qual este trabalho se baseia. Dentre as outras técnicas abordadas pelo
+autor, está a detecção de dupla compressão JPEG, que pode identificar se houve uma colagem de duas
+ou mais imagens JPEGs diferentes, a detecção de regiões duplicadas da imagem (cópia-colagem) e
+a verificação da interpolação de cores da imagem. Quanto á última, a maioria das câmeras digitais
+não capturam todos os três canais de cores ao mesmo tempo (vermelho, verde e azul), mas apenas uma
+cor para cada pixel e depois, através de interpolação dos valores, as cores finais são calculadas.
+O método proposto consiste em tentar estimar como as cores foram interpoladas e tentar achar
+aberrações na imagem, isto é, regiões que apresentam outro comportamento de interpolação, que pode
+significar uma montagem.
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Solução Proposta}
+Falar sobre a solução proposta... 
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimentos e Discussão}
+Resultados
+
+%%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusões e Trabalho Futuro}
+Os finalmentes
+
 
 %%% References %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {\small
