@@ -1,7 +1,9 @@
+% Implementação 2D do algoritmo de detecção de re-sampling proposto por
+% Alin Popescu e Heny Farid.
 clear;
 
 step = 1;
-L = 256; % tamanho da imagem aleatória (quadrada por enquanto)
+L = 32; % tamanho da imagem aleatória (quadrada por enquanto)
 N = 1; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é a cardinalidade do conjunto formado no intervalo)
 
 alpha = rand(2*N+1, 2*N+1);
@@ -33,11 +35,11 @@ for x = 4:4:L-4
     end
 end
 
-max_steps = 2000;
+max_steps = 1000;
 
 % parâmetros do EM
 sigma = 0.05; % variancia da gaussiana
-delta = 1/(max(max(f)) - min(min(f))); % delta uniforme; mais tarde, delta é invertido, representa Pr{f(x,y)|f(x,y) pert. M2}
+delta = 1/(max(max(f)) - min(min(f)) + 1); % delta uniforme; mais tarde, delta é invertido, representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
 
@@ -54,20 +56,24 @@ while (step < max_steps)
     P = zeros(L, L);
     
     % Cálculo do residual r
-    for x = 2:L-1
-        for y = 2:L-1
-            
-            r_temp = 0;
-            
-            for u = 1:2*N+1
-                for v = 1:2*N+1
-                    r_temp = r_temp + alpha(u, v) * f(x + u - 2, y + v - 2);
-                end
-            end
-            
-            r(x, y) = abs(f(x, y) - r_temp); % o abs(.) não é necessário visto que r será elevado ao quadrado, gerando um num. positivo.
-        end
-    end
+    %for x = 2:L-1
+    %    for y = 2:L-1
+    %        
+    %        r_temp = 0;
+    %        
+    %        for u = 1:2*N+1
+    %            for v = 1:2*N+1
+    %                r_temp = r_temp + alpha(u, v) * f(x + u - 2, y + v - 2);
+    %            end
+    %        end
+    %        
+    %        r(x, y) = abs(f(x, y) - r_temp); % o abs(.) não é necessário visto que r será elevado ao quadrado, gerando um num. positivo.
+    %    end
+    %end
+    
+    filtered_image = filter2(alpha, f);
+    r = abs(filtered_image - f);
+    clear filtered_image;
     
     for x = 2:L-1
         for y = 2:L-1
@@ -82,6 +88,21 @@ while (step < max_steps)
             w(x, y) = P(x, y) / (P(x, y) + delta);
         end
     end
+    
+    P(1, :) = [];
+    P(L-1, :) = [];
+    P(:, 1) = [];
+    P(:, L-1) = [];
+    
+    w(1, :) = [];
+    w(L-1, :) = [];
+    w(:, 1) = [];
+    w(:, L-1) = [];
+    
+    r(1, :) = [];
+    r(L-1, :) = [];
+    r(:, 1) = [];
+    r(:, L-1) = [];
     
     % Passo M
     for s = 1:(2*N+1)

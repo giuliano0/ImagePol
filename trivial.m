@@ -1,55 +1,65 @@
-% Caso trivial de vizinhança 3
+% ASSUMIR RESAMPLING POR INTERPOLAÇÃO PORCARIA (digo, linear)!
+% - De acordo com os autores, interpolações não lineares também produzem
+% relações, mas elas podem não ser (tão) periódicas.
+% - O blurring (a filtragem mostrada no algoritmo) não é necessária, mas é
+% reportado pelos autores que acelera a convergência.
+
+% Os parâmetros do EM foram fixados a:
+% - N = 2 (tamanho de vizinhança 5x5)
+% - Nh = 3 (tamanho do filtro de blurring 3x3)
+% - sigma_0 = 0.0075
+% - p0 = delta = 1/256.
+
 clear;
+
+f = double(imread('sample_10dg.png'));
+
+% Normalizando a imagem para [0;1]
+% Coloquei esse passo para observar os valores de saída quando a entrada tá
+% nesse range. Comentar/retirar se achar necessário.
+f = f - min(min(f));
+f = f / max(max(f));
 
 % constantes de controle
 step = 1;
-L = 3; % tamanho da imagem aleatória (quadrada por enquanto)
-N = 1; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é a cardinalidade do conjunto formado no intervalo)
-
-% imagem de caso trivial, 1 pixel relacionado
-f = [100 58 200; 90 146 219; 31 160 252];
-
-% matriz de correlação dos pixels
-alpha_0 = [0.25 0 0.25; 0 0 0; 0.25 0 0.25];
+L = length(f); % estamos usando imagens quadradas
+N = 2; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
+neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
 
 % inicializa alpha aleatório
-alpha = rand(3, 3);
-alpha(2, 2) = 0;
+alpha = rand(neigh, neigh);
+alpha(1 + N, 1 + N) = 0;
 alpha = alpha / sum(sum(alpha)); % para garantir que os oeficientes somam 1
 
 % pré-inicializa alpha_new (o matlab recomenda =P)
-alpha_new = zeros(2*N+1, 2*N+1);
+alpha_new = zeros(neigh, neigh);
 
 max_steps = 10;
+converged = false;
 
 % parâmetros do EM
-sigma = 20; % variancia da gaussiana
+sigma = 0.0075; % variancia da gaussiana
 delta = 1/256; % delta uniforme; mais tarde, delta é invertido, representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
 
-while (step < max_steps)
+while (step < max_steps && ~converged)
     % Passo E
+    % Estima a probabilidade de cada sample f(x,y) pertencer a um modelo
+    % específico, M1 ou M2, correlacionado ou não, respectivamente.
 
-    %r = zeros(L, L);
-    w = zeros(L, L);
-    P = zeros(L, L);
+    %w = zeros(L, L);
+    %P = zeros(L, L);
     
     filtered_image = filter2(alpha, f);
     r = abs(filtered_image - f);
     clear filtered_image;
     
     % Gera P e w SEM PADDING
-    for x = 1:3
-        for y = 1:3
-            % Cálculo da probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
-            P(x, y) =  (1 / (sigma * sqrt(2*pi))) * exp( -((r(x, y)^2) / (2 * sigma^2)) );
-            %P(x, y) =  exp( -(r(x, y)^2 / (2 * sigma^2)) );
-            
-            % Cálculo da probabilidade Pr{f(x,y) | f(x,y) pert. M1}
-            w(x, y) = P(x, y) / (P(x, y) + delta);
-        end
-    end
+    % Probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
+    P =  exp( -((r.^2) / (2 * sigma^2)) ) / (sigma * sqrt(2*pi));
+    % Probabilidade Pr{f(x,y) | f(x,y) pert. M1}
+    w = P ./ (P + delta);
     
     disp('E step completed');
     pause(0.25);
@@ -70,20 +80,30 @@ while (step < max_steps)
     
     clear w_size;
     
+    P_img = P - min(min(P));
+    P_img = int8(256*(P_img / max(max(P))));
+    %imshow(P_img);
+    w_img = w - min(min(w));
+    w_img = int8(256*(w_img / max(max(w_img))));
+    %imshow(w_img);
+    
+    %disp('Paused before M step.');
+    %pause();
+    
     % Passo M
     
-    A = zeros(9, 9); B = zeros(9, 1);
+    A = zeros(neigh^2, neigh^2); B = zeros(neigh^2, 1);
     
-    for s = -1:1
-        for t = -1:1
+    for s = -N:N
+        for t = -N:N
 
-            for u = -1:1
-                for v = -1:1
+            for u = -N:N
+                for v = -N:N
 
-                    for x = 2:4 % (1+1 : 5-1)
-                        for y = 2:4 % (1+1 : 5-1)
-                            i = 3 * (s + 1) + (t + 2);
-                            j = 3 * (u + 1) + (v + 2);
+                    for x = N+1:L-N % (1+1 : 5-1)
+                        for y = N+1:L-N % (1+1 : 5-1)
+                            i = neigh * (s + N) + (t + (N+1));
+                            j = neigh * (u + N) + (v + (N+1));
                             
                             A(i, j) = A(i, j) + w_padded(x, y) * f_padded(x + s, y + t) * f_padded(x + u, y + v);
                         end
@@ -92,9 +112,10 @@ while (step < max_steps)
                 end
             end
             
-            for x = 2:4 % (1+1 : 5-1)
-                for y = 2:4 % (1+1 : 5-1)
-                    B(3*(s+1) + t+2, 1) = B(3*(s+1) + t+2, 1) + w_padded(x, y) * f_padded(x + s, y + t) * f_padded(x, y);
+            for x = N+1:L-N % (1+1 : 5-1)
+                for y = N+1:L-N % (1+1 : 5-1)
+                    i = neigh * (s + N) + (t + (N+1));
+                    B(i, 1) = B(i, 1) + w_padded(x, y) * f_padded(x + s, y + t) * f_padded(x, y);
                 end
             end
 
@@ -116,33 +137,29 @@ while (step < max_steps)
     alpha_new_vector = linsolve(A, B);
     
     % transforma alpha_new_vector em matriz
-    alpha_new(:, 1) = alpha_new_vector(1:3);
-    alpha_new(:, 2) = alpha_new_vector(4:6);
-    alpha_new(:, 3) = alpha_new_vector(7:9);
+    for i = 1:neigh
+        alpha_new(:, i) = alpha_new_vector(neigh*(i-1) + 1:neigh*i);
+    end
     
     % solução noob pra problema sério
-    alpha_new(2, 2) = 0;
+    alpha_new(N+1, N+1) = 0;
     
     disp('M step competed');
     pause(0.25);
     
     % condição de parada 
     if (norm(alpha_new - alpha) < 0.01)
-        break;
+        converged = true;
     end
 
     alpha = alpha_new;
     
-    above = 0;
-    
-    for x = 1:3
-        for y = 1:3
-            above = above + w(x,y) * r(x,y)^2;
-        end
-    end
-    
-    sigma = sqrt(above / sum(sum(w)));
-    clear above;
+    % calcula novo sigma
+    % DESABILITEI esse trecho pois o paper diz que foi usado sigma fixo
+    % (mesmo que ele tenha exposto o algoritmo com o cálculo, anyway).
+    %above = w .* (r.^2);
+    %sigma = sqrt(sum(sum(above)) / sum(sum(w)));
+    %clear above;
     
     disp(sprintf('step %d completed.', step));
     step = step + 1;
@@ -150,6 +167,9 @@ while (step < max_steps)
     pause(0.5);
 end
 
-F = int8(round(abs(fftshift(fft(P)))));
+if (converged)
+    F = int8(abs(fftshift(fft(P))));
 
-disp(sprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step));
+    disp(sprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step));
+else
+    disp('EM finished without converging. :(');
