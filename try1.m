@@ -63,33 +63,29 @@ while (step < max_steps && ~converged)
     disp('E step completed');
     pause(0.25);
     
-    pause;
-    
     % "interlude": padding de f e w, para o passo M
+    z = zeros(length(f), N);
+    pf = cat(2, z, f, z);
+    z = zeros(length(f) + 2*N, N);
+    pf = cat(2, z, pf', z);
     
-    f_size = size(f);
+    z = zeros(length(w), N);
+    pw = cat(2, z, w, z);
+    z = zeros(length(w) + 2*N, N);
+    pw = cat(2, z, pw', z);
     
-    f_padded = [zeros(1, f_size(2)); f; zeros(1, f_size(2))];
-    f_padded = ( [zeros(1, f_size(1) + 2); f_padded'; zeros(1, f_size(1) + 2)] )';
-    
-    clear f_size;
-    
-    w_size = size(w);
-    
-    w_padded = [zeros(1, w_size(2)); w; zeros(1, w_size(2))];
-    w_padded = ( [zeros(1, w_size(1) + 2); w_padded'; zeros(1, w_size(1) + 2)] )';
-    
-    clear w_size;
-    
-    P_img = P - min(min(P));
-    P_img = int8(256*(P_img / max(max(P))));
+    % DEBUG: calcula IBAGENS de P e W se alguém quiser vê-las.
+    %P_img = P - min(min(P));
+    %P_img = int8(256*(P_img / max(max(P))));
     %imshow(P_img);
-    w_img = w - min(min(w));
-    w_img = int8(256*(w_img / max(max(w_img))));
+    
+    %w_img = w - min(min(w));
+    %w_img = int8(256*(w_img / max(max(w_img))));
     %imshow(w_img);
     
     %disp('Paused before M step.');
     %pause();
+    %END DEBUG
     
     % Passo M
     
@@ -102,23 +98,25 @@ while (step < max_steps && ~converged)
                 for v = -N:N
 
                     % Os limites 1+N:L-N são para evitar problemas de
-                    % out-f-bounds
-                    for x = 1+N:L-N % (1+1 : 128-1)
-                        for y = 1+N:L-N % (1+1 : 128-1)
+                    % out-f-bounds. Como estamos usando padding em f e w,
+                    % o f(1,1) passa a ser f(1+N,1+N)
+                    for x = 1+N:L-N
+                        for y = 1+N:L-N
                             i = neigh * (s + N) + (t + (N+1));
                             j = neigh * (u + N) + (v + (N+1));
                             
-                            A(i, j) = A(i, j) + w_padded(x, y) * f_padded(x + s, y + t) * f_padded(x + u, y + v);
+                            A(i, j) = A(i, j) + pw(x, y) * pf(x + s, y + t) * pf(x + u, y + v);
                         end
                     end
                     
                 end
             end
             
-            for x = N+1:L-N % (1+1 : 5-1)
-                for y = N+1:L-N % (1+1 : 5-1)
+            % Sobre limites: ler comentário no loop x,y acima
+            for x = 1+N:L-N
+                for y = 1+N:L-N
                     i = neigh * (s + N) + (t + (N+1));
-                    B(i, 1) = B(i, 1) + w_padded(x, y) * f_padded(x + s, y + t) * f_padded(x, y);
+                    B(i, 1) = B(i, 1) + pw(x, y) * pf(x + s, y + t) * pf(x, y);
                 end
             end
 
@@ -167,7 +165,7 @@ while (step < max_steps && ~converged)
     %clear above;
     
     %disp(sprintf('step %d completed.', step));
-    fprintf('step %d completed.', step);
+    fprintf('step %d completed.\n', step);
     step = step + 1;
     
     pause(0.5);
