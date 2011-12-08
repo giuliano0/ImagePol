@@ -27,7 +27,7 @@ function alpha = Their_EM(im)
             % Expectation
             acc = 0;
             for k = 1:n_neigh
-                acc = acc+a(k) * shiftedB{k};
+                acc = acc + a(k) * shiftedB{k};
             end
 
            r = abs(B - acc);
@@ -41,18 +41,22 @@ function alpha = Their_EM(im)
             % Maximization
             C = zeros(n_neigh,1);
             M = zeros(n_neigh);        
+            
             for k = 1:n_neigh
                 aux = w.*shiftedB{k}.*B;
                 C(k) = sum(aux(:));
+            
                 for l = 1:n_neigh
                     aux = w.*shiftedB{k}.*shiftedB{l};
                     M(k,l) = sum(aux(:));
                 end
             end
-            a=(M\C)';
-            aux=w.*r2;
-            s=sqrt(sum(aux)/sum(w));
+            
+            a = (M\C)';
+            aux  =w.*r2;
+            s = sqrt(sum(aux)/sum(w));
         end
+        
         alpha{c}=a;    
     end
 
