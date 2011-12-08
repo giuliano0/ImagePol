@@ -27,6 +27,9 @@ epsilon = 0.01; % condição de parada. Arbitrária
 L = length(f); % estamos usando imagens quadradas
 N = 2; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
 neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
+% DEBUG
+least_normdiff = 100; % guarda a menor norma encontrada no processo
+% END DEBUG
 
 % inicializa alpha aleatório
 alpha = rand(neigh, neigh);
@@ -45,7 +48,7 @@ delta = 1/256; % delta uniforme; representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
 
-while (step < max_steps && ~converged)
+while (step <= max_steps && ~converged)
     % Passo E
     % Estima a probabilidade de cada sample f(x,y) pertencer a um modelo
     % específico, M1 ou M2, correlacionado ou não, respectivamente.
@@ -132,12 +135,9 @@ while (step < max_steps && ~converged)
     % não precisamos mais de i e j
     clear i; clear j;
     
-    alpha_new_vector = linsolve(A, B);
+    alpha_new = linsolve(A, B);
     
-    % transforma alpha_new_vector em matriz
-    for i = 1:neigh
-        alpha_new(:, i) = alpha_new_vector(neigh*(i-1) + 1:neigh*i);
-    end
+    fprintf('alpha_new mid coefficient value was %d. Now it is being set to 0.\n', alpha_new(N+1, N+1));
     
     % solução noob pra problema sério
     alpha_new(N+1, N+1) = 0;
@@ -145,8 +145,16 @@ while (step < max_steps && ~converged)
     disp('M step competed');
     pause(0.25);
     
-    % condição de parada 
-    if (norm(alpha_new - alpha) < epsilon)
+    % condição de parada
+    normdiff = norm(alpha_new - alpha);
+    
+    % DEBUG
+    if (normdiff < least_normdiff)
+        least_normdiff = normdiff;
+    end
+    % END DEBUG
+    
+    if (normdiff < epsilon)
         converged = true;
     %else
     %    Rinse, repeat :)
@@ -157,19 +165,22 @@ while (step < max_steps && ~converged)
     % calcula novo sigma
     % DESABILITEI esse trecho pois o paper diz que foi usado sigma fixo
     % (mesmo que ele tenha exposto o algoritmo com o cálculo, anyway).
-    %above = w .* (r.^2);
-    %sigma = sqrt(sum(sum(above)) / sum(sum(w)));
-    %clear above;
+    aux = w .* (r.^2);
+    sigma = sqrt(sum(sum(aux)) / sum(sum(w)));
+    clear aux;
     
     %disp(sprintf('step %d completed.', step));
-    fprintf('step %d completed.\n', step);
+    fprintf('step %d completed. Norm of diference between alphas is %d\n', step, normdiff);
     step = step + 1;
     
     pause(0.5);
 end
 
 if (converged)
-    F = int8(abs(fftshift(fft(P))));
+    F = abs(fftshift(fft(P)));
+    F = F - min(min(F));
+    F = 255*(F / max(max(F)));
+    F = int8(F);
 
     %disp(sprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step));
     fprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step);
@@ -177,4 +188,21 @@ else
     disp('EM finished without converging. :(');
 end
 
+FP = abs(fftshift(fft(P)));
+FP = FP - min(min(FP));
+FP = 255*(FP / max(max(FP)));
+FP = int8(FP);
+
+FW = abs(fftshift(fft(w)));
+FW = FW - min(min(FW));
+FW = 255*(FW / max(max(FW)));
+FW = int8(FW);
+
+w2 = w - min(min(w));
+w2 = 255*(w2 / max(max(w2)));
+w2 = int8(w2);
+
+p2 = w - min(min(P));
+p2 = 255*(p2 / max(max(p2)));
+p2 = int8(p2);
 
