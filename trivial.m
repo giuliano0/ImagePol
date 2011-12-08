@@ -1,4 +1,5 @@
 % ASSUMIR RESAMPLING POR INTERPOLAÇÃO PORCARIA (digo, linear)!
+% nvm, interpolação bicúbica foi assumida no paper.
 % - De acordo com os autores, interpolações não lineares também produzem
 % relações, mas elas podem não ser (tão) periódicas.
 % - O blurring (a filtragem mostrada no algoritmo) não é necessária, mas é
@@ -17,11 +18,12 @@ f = double(imread('sample_10dg.png'));
 % Normalizando a imagem para [0;1]
 % Coloquei esse passo para observar os valores de saída quando a entrada tá
 % nesse range. Comentar/retirar se achar necessário.
-f = f - min(min(f));
-f = f / max(max(f));
+%f = f - min(min(f));
+%f = f / max(max(f));
 
 % constantes de controle
 step = 1;
+epsilon = 0.01; % condição de parada. Arbitrária
 L = length(f); % estamos usando imagens quadradas
 N = 2; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
 neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
@@ -29,7 +31,7 @@ neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
 % inicializa alpha aleatório
 alpha = rand(neigh, neigh);
 alpha(1 + N, 1 + N) = 0;
-alpha = alpha / sum(sum(alpha)); % para garantir que os oeficientes somam 1
+alpha = alpha / sum(sum(alpha)); % para garantir que os oeficientes somem 1
 
 % pré-inicializa alpha_new (o matlab recomenda =P)
 alpha_new = zeros(neigh, neigh);
@@ -38,8 +40,8 @@ max_steps = 10;
 converged = false;
 
 % parâmetros do EM
-sigma = 0.0075; % variancia da gaussiana
-delta = 1/256; % delta uniforme; mais tarde, delta é invertido, representa Pr{f(x,y)|f(x,y) pert. M2}
+sigma = 0.0075; % variancia da gaussiana fixada via paper
+delta = 1/256; % delta uniforme; representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
 
@@ -48,12 +50,9 @@ while (step < max_steps && ~converged)
     % Estima a probabilidade de cada sample f(x,y) pertencer a um modelo
     % específico, M1 ou M2, correlacionado ou não, respectivamente.
 
-    %w = zeros(L, L);
-    %P = zeros(L, L);
-    
     filtered_image = filter2(alpha, f);
     r = abs(filtered_image - f);
-    clear filtered_image;
+    %clear filtered_image;
     
     % Gera P e w SEM PADDING
     % Probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
@@ -63,6 +62,8 @@ while (step < max_steps && ~converged)
     
     disp('E step completed');
     pause(0.25);
+    
+    pause;
     
     % "interlude": padding de f e w, para o passo M
     
@@ -100,8 +101,10 @@ while (step < max_steps && ~converged)
             for u = -N:N
                 for v = -N:N
 
-                    for x = N+1:L-N % (1+1 : 5-1)
-                        for y = N+1:L-N % (1+1 : 5-1)
+                    % Os limites 1+N:L-N são para evitar problemas de
+                    % out-f-bounds
+                    for x = 1+N:L-N % (1+1 : 128-1)
+                        for y = 1+N:L-N % (1+1 : 128-1)
                             i = neigh * (s + N) + (t + (N+1));
                             j = neigh * (u + N) + (v + (N+1));
                             
@@ -148,8 +151,10 @@ while (step < max_steps && ~converged)
     pause(0.25);
     
     % condição de parada 
-    if (norm(alpha_new - alpha) < 0.01)
+    if (norm(alpha_new - alpha) < epsilon)
         converged = true;
+    %else
+    %    Rinse, repeat :)
     end
 
     alpha = alpha_new;
@@ -161,7 +166,8 @@ while (step < max_steps && ~converged)
     %sigma = sqrt(sum(sum(above)) / sum(sum(w)));
     %clear above;
     
-    disp(sprintf('step %d completed.', step));
+    %disp(sprintf('step %d completed.', step));
+    fprintf('step %d completed.', step);
     step = step + 1;
     
     pause(0.5);
@@ -170,6 +176,10 @@ end
 if (converged)
     F = int8(abs(fftshift(fft(P))));
 
-    disp(sprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step));
+    %disp(sprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step));
+    fprintf('EM finished on step %d. Try imshow(F) to show the Fourier Spectrum.', step);
 else
     disp('EM finished without converging. :(');
+end
+
+
