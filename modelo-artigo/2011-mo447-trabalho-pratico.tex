@@ -19,7 +19,7 @@
 \newcommand{\TODO}[1]{TODO: #1}
 \newcommand{\CITEONE}[2]{\mbox{#1 \cite{#2}}}
 \newcommand{\CITETWO}[3]{\mbox{#1 and #2 \cite{#3}}}
-\newcommand{\CITEN}[2]{\mbox{#1 et al. \cite{#2}}}
+\newcommand{\CITEN}[2]{\mbox{#1 \textit{et al.} \cite{#2}}}
 
 %%% Paper beginning %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -35,39 +35,38 @@ Anderson Rocha\thanks{Is with the Institute of Computing, University of Campinas
 %%% Abstract %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \maketitle
 \begin{abstract}
-Imagens digitais fazem parte do cotidiano de muitas pessoas, raras são as que não
-possuem acesso à essa tecnologia. Devido à essa ubiquidade, cresce, em ritmo acelerado, a qualidade
-dos \textit{softwares} de edição de imagens, bem como as técnicas para a manipulação 
+Imagens digitais fazem parte do cotidiano de muitas pessoas; raras são as que não
+possuem acesso à essa tecnologia. Cresce também, em ritmo acelerado, a qualidade
+de \textit{softwares} de edição de imagens, bem como as técnicas para a manipulação 
 das mesmas. Em uma realidade na qual uma imagem pode servir de prova em um caso jurídico,
-é importante haver meios para se identificar imagens fraudulentas para garantir a integridade
-do caso. A evolução das fraudes, impossibilita, muitas vezes, essa identificação
+é importante haver meios para se identificar imagens fraudulentas afim de garantir a integridade
+do caso. A evolução da qualidade das fraudes impossibilita essa identificação
 simplesmente através da observação, mesmo para olhos treinados. É necessário o desenvolvimento
-de algorítimos para esse fim. O nosso trabalho implementa e testa um algorítimo para 
-identificar imagens alteradas por \textit{resampling} (i.e rotação, redimensão) proposto
+de algoritimos para esse fim. O nosso trabalho implementa e testa um algoritimo para 
+identificar imagens alteradas por \textit{resampling} (i.e. rotação, redimensão) proposto
 por \CITEONE{Popescu}{Popescu_2004} e tenta melhorá-lo.
 \end{abstract}
 
 %%% Introduction %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introdução}
 No passado, quando existiam apenas imagens analógicas, manipular imagens exigia
-técnicas manuais complexas, muito tempo, cuidado e paciência de quem o fosse fazer. 
+técnicas manuais complexas, muito tempo, cuidado e paciência.
 O simples ato de remover uma pessoa de uma foto exigia uma grande quantidade de 
 trabalho e de tempo (muitas horas, às vezes dias) na sala escura. 
-Em vista disso manipulações de imagens eram raras e, muitas vezes, 
-limitada à operações governamentais ou militares. \cite{Rocha_Goldenstein_2010}
+Em vista disso, manipulações de imagens eram raras e, usadas principalmente
+para fins governamentais ou militares. \cite{Rocha_Goldenstein_2010}
 
-Nos últimos anos, todavia, computadores e câmeras digitais ficaram cada vez melhores e mais acessíveis,
-bem como \textit{softwares} de edição de imagens, (\textit{Adobe Photoshop} e \textit{GNU Gimp}\footnote{Adobe Photoshop e GNU Gimp são softwares registrados com suas respectivas licenças por seus respectivos autores}, por exemplo). \cite{Popescu_2004} Atualmente muitas pessoas possuem acesso à 
-imagens digitais e manipulá-las pode ser feito por qualquer um em poucos minutos. Com um mínimo 
-de técnica em um software de edição, uma pessoa pode alterar significativamente uma imagem, em poucos minutos, de modo que isso não seja perceptível à olho nu.
+Nos últimos anos, todavia, computadores e câmeras digitais tornaram-se melhores e mais acessíveis,
+bem como \textit{softwares} de edição de imagens (\textit{Adobe Photoshop} e \textit{GNU Gimp}\footnote{Adobe Photoshop e GNU Gimp são softwares registrados com suas respectivas licenças por seus respectivos autores}, por exemplo)\cite{Popescu_2004}. No cenário atual, muitos possuem acesso à 
+imagens digitais e manipulá-las pode ser feito por qualquer um, em poucos minutos. Com um mínimo 
+de técnica em um software de edição, pode-se alterar significativamente uma imagem, 
+de modo que isso não seja perceptível a olho nu.
 
 O uso de tais softwares para fins banais, como correção de iluminação, remoção de olhos vermelhos, 
-entre outros, não interessa à computação forense. Entratanto, a partir do momento em que uma 
-manipulação de imagem tem algum objetivo malicioso, é de grande interesse conseguir confirmar a
-autenticidade da imagem. A facilidade em manipular imagens, diminuiu a credibilidade da mesma 
-nos tribunais. \cite{Fridrich_03} Em um caso jurídico no qual a evidência mais forte para inocentar 
-ou criminalizar uma pessoa seja uma imagem, é necessário conseguir separar as fraudes de imagens 
-autênticas.
+entre outros, não interessa à computação forense. Entratanto, quando uma  manipulação de imagem 
+tem algum objetivo malicioso, é de grande interesse confirmar a autenticidade da imagem. A facilidade 
+em manipular imagens diminuiu sua credibilidade nos tribunais \cite{Fridrich_03}.
+Em um caso jurídico no qual a evidência mais forte para inocentar ou criminalizar uma pessoa seja uma imagem, é necessário conseguir separar fraudes de fotos autênticas.
 
 \begin{figure}
 \begin{center}
@@ -76,58 +75,49 @@ autênticas.
 \end{center} 
 \end{figure}
 
-Imagens fraudadas também aparecem na mídia, com o intuito de mostrar uma situação sob outra 
-perspectiva, como aconteceu com o fotógrafo Brian Walski em 2003 no jornal \textit{Los Angeles Times}. \cite{Rocha_Goldenstein_2010} Como pode ser observado na \textbf{Figura 1}, na montagem à direita o soldado britânico parece estar orientando um  iraquiano com uma criança no colo, mas, como pode ser visto nas imagens originais, à esquerda, esse momento nunca aconteceu. Assim que a fraude foi descoberta, o fotógrafo foi demitido.
+Imagens fraudadas também aparecem na mídia com o intuito de mostrar uma situação sob outra 
+perspectiva, como aconteceu com o fotógrafo Brian Walski em 2003 no jornal \textit{Los Angeles Times} \cite{Rocha_Goldenstein_2010}. Na montagem do fotógrafo (ver \textbf{Figura 1}) o soldado britânico parece estar orientando um  iraquiano com uma criança no colo, mas esse momento nunca aconteceu, a foto que apareceu
+no jornal foi uma composição de outras duas fotos. Assim que a fraude foi descoberta, o fotógrafo foi demitido \cite{Rocha_Goldenstein_2010}.
 
-Outro exemplo, é o caso da ficha criminal de Dilma Rousseff, que no dia 5 de abril de 2009 saiu no jornal Folha de São Paulo (ver Figura 2). Segundo a ficha, a então chefe de estado, teve participação ativa na resistência durante o regime militar, planejando roubos e sequestros. Foi afirmado que o documento vinha do arquivo público de São Paulo, portanto, que era autentico. Entretanto, uma análise forense realizada na imagem revelou que a imagem da ficha não provinha de um scanner, além de possuir outras características típicas de imagens criadas em computador, counclui-se que a ficha era falsa. \cite{Rocha_et_al_2011}
+Outro exemplo, é o caso da ficha criminal de Dilma Rousseff, que no dia 5 de abril de 2009 saiu no jornal Folha de São Paulo (ver \textbf{Figura 2}). Segundo a ficha, a então chefe de estado teve participação ativa na resistência durante o regime militar brasileiro, planejando roubos e sequestros. Afirmou-se que o documento foi encontrado no arquivo público de São Paulo, portanto, que era autêntico. Entretanto, uma análise forense revelou que a imagem da ficha não foi digitalizada, além de possuir características típicas de imagens criadas em computador e a tipografia não possuir características inerentes à gerada por uma
+máquina de escrever, counclui-se que a ficha era falsa \cite{Rocha_et_al_2011}.
 \begin{figure}
 \begin{center}
 	\includegraphics[width=0.99\columnwidth]{pics/Dilma}
-	\caption{Falsa ficha criminal da então chefe de estado Dilma Rousseff no jornal Folha de São Paulo.}   
+	\caption{Falsa ficha criminal da então chefe de estado Dilma Rousseff no jornal Folha de São Paulo (2009) .}   
 \end{center} 
 \end{figure}
 
-Além de imagens serem fraudadas para alimentar o sensacionalismo da mídia, é comum, em época de eleições
-principalmente, surgirem imagens fraudadas com políticos em situações não louváveis ou se encontrando
-com pessoas odiadas pelo público, com o intuito de denegrir a imagem do candidato. Inúmeros são os casos, já foi visto Bill Clinton cumprimentando Saddam Hussein \cite{Fridrich_03}, Sarah Palin segurando um fuzil em frente à uma piscina \cite{Rocha_Goldenstein_2010}, George W Bush e Luís Inácio Lula da Silva lendo livros de cabeça para baixo, entre outros.
-
-Neste documento será estudado um método para conseguir separar imagens suspeitas de fraudes, de imagens
-autênticas e, no caso da imagem suspeita, apontar as regiões da imagem que provavelmente foram 
+Neste artigo será apresentado um método para separar possíveis fraudes, de imagens
+autênticas e, no caso da imagem suspeita, apontar as regiões que provavelmente foram 
 adulteradas. O método, originalmente proposto por \CITEONE{Popescu}{Popescu_2004}, identifica
-imagens alteradas através de uma técnica conhecida como \textit{resampling}, na qual uma imagem ou
-um pedaço de imagem é rotacionado, redimensionado ou realocado de posição. Utilizando essa técnica,
-é possível remover ou multiplicar objetos de uma foto.
+alterações através de uma técnica conhecida como \textit{resampling}, na qual uma imagem ou
+um pedaço de imagem é rotacionado ou redimensionado. Utilizando essa técnica,
+é possível remover detalhes de uma foto ou adicionar elementos em uma foto vinda da própria
+imagem.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Estado da Arte}
-Recentemente, muito esforço vem sendo colocado para resolver o problema de identificação de
-imagens digitais fraudulentas. Cada método foca em diferentes características que podem ser
-avaliadas para se tentar verificar a autenticidade de uma imagem. Algumas técnicas, tentam
-separar imagens naturais de imagens geradas por computador, uma delas propõe fazer isso
+Ultimamente, muito esforço vem sendo colocado para resolver o problema de identificação de
+imagens digitais fraudulentas. Cada método foca em diferentes características que podem 
+ser analisadas afim de autenticar uma imagem. Algumas técnicas tentam
+separar imagens naturais de imagens geradas por computador; uma delas propõe fazer isso
 analisando características físicas da imagem, que se mostrou melhor do que analisar se
-a imagem possui características de desenhos. \cite{Ng_2005} 
+a imagem possui características de desenhos \cite{Ng_2005}.
 
-O método proposto por \CITEN{Fridrich}{Fridrich_03} detecta imagens alteradas por cópia e colagem,
-e revela onde estão as regiões copiadas. A técnica simples, porém robusta, consiste em ir comparando
-blocos de pixels da imagem de dois modos diferentes, no primeiro, comparando se os blocos são 
-exatamente iguais, no segundo utilizando a transformada discreta do cosseno para fazer comparações aproximadas, e assim, tolerar possíveis ruídos ou alterações na imagem. 
-Apesar da precisão, o custo da técnica aumenta muito para imagens com grande grande quantidade de pixels.
+O método proposto por \CITEN{Fridrich}{Fridrich_03} detecta imagens alteradas por cópia e colagem, além de revelar onde estão as regiões copiadas. A técnica simples, porém robusta, consiste em comparar
+blocos de pixels da imagem de dois modos diferentes: no primeiro, compara se os blocos são 
+exatamente iguais, no segundo, utilizando a transformada discreta do cosseno para fazer comparações aproximadas, e assim, tolerar possíveis ruídos ou alterações insignificantes na imagem.
+Apesar de uma boa precisão, o custo da técnica aumenta muito para imagens com grande quantidade de pixels.
 
-\CITEN{Lint}{Lint_et_al_2005} propõe uma técnica que compara blocos de pixels em bordas na imagem,
-tentando identificar uma função resposta da câmera e verificando se os resultados das comparações
-batem. A função resposta de uma câmera consiste em uma função matemática que faz uma aproximação
-de cores em bordas com contrastes (por exemplo, na borda da imagem entre uma árvore e um céu de fundo),
-tal aproximação é necessária devido à limitação da resolução de uma câmera digital. Comparando-se
-as funções usadas para gerar as cores nas bordas, ao se encontrar alguma região que parece usar
-uma função muito diferente pode-se suspeitar de uma montagem. Essa técnica não é muito eficiente
-em imagens nas quais as bordas não tenham alto contraste.
-
-Para o caso em que o problema é saber se uma determinada imagem veio de uma determinada câmera
-e não sofreu nenhum tipo de operação, \CITEN{Swaminathan}{Swaminathan_2008} propõe uma solução
-que avalia uma foto que com certeza foi obtida pela câmera e dessa foto extrai informações de
-processamento de imagem, única daquela câmera, a digital (\textit{fingerprint}) da câmera e
-repete o processo na imagem dada. Caso as digitais não estejam batendo, suspeita-se de uma
-fraude.
+A função resposta de uma câmera é uma função matemática que faz uma aproximação de cores em bordas com contrastes (por exemplo, a borda entre uma árvore verde escuro e um céu azul claro),
+tal aproximação é necessária devido à limitação da resolução de uma câmera digital, que captura
+um número limitado de informações da paisagem. É preciso
+estimar cores intermediárias para bordas afim de uma transição mais realista. Sabendo disso, \CITEN{Lint}{Lint_et_al_2005} criaram uma técnica que determina funções utilizada para gerar
+as cores nas bordas da imagem, dividindo-a em blocos de pixels, e compara os resultados entre
+si ou com uma função resposta conhecida de uma dada câmera. Caso alguma região pareça usar uma função muito 
+diferente pode-se suspeitar de uma montagem. 
+Essa técnica não é muito eficiente em imagens nas quais as bordas não tenham alto contraste.
 
 \CITEONE{Popescu}{Popescu_2004}, em sua tese de doutorado, propõe diversos métodos estatísticos
 para se identificar se uma imagem é verdadeira. Dentre eles está o método para identificar manipulações
@@ -143,16 +133,113 @@ significar uma montagem.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Solução Proposta}
-Falar sobre a solução proposta... 
+\subsection{Resampling}
+Quando uma imagem é redimensionada ou rotacionada, softwares de edição interpolam
+a amostra de pixels existentes para fazer uma aproximação para pixels novos, no
+caso de um aumento de tamanho, ou dos pixels restantes, no caso de diminuir o tamanho. O processo em ambos os casos é generalizado para redimensionar o número de amostras em um sinal por um fator de $\frac{p}{q}$. Seja um sinal unidimensional $x[t]$ com $m$ amostras, a interpolação por um fator de $\frac{p}{q}$ que resulta em um sinal com $n$ amostras ocorre em três passos\cite{Popescu_2004}:
+\begin{itemize}
+\item \textbf{Up-sample} cria-se um novo sinal $x_{u}[t]$ com $pm$ amostras, no qual:
+\[
+x_{u}[i] = \left\{ 
+  \begin{array}{l l}
+    x[t] & \quad \text{se $i = pt$ tal que $t = 1, 2, ..., m$}\\
+    0 & \quad \text{para outros casos}\\
+  \end{array} \right.
+\]
+\item \textbf{Interpolação} convolução de $x_{u}[t]$ com um filtro passa-baixas $h$:
+\[
+x_{v}[t] = x_{u}[t] \star h[t]
+\]
+\item \textbf{Down-sample} cria-se um novo sinal $x_{d}[t]$ com $n$ amostras no qual:
+\[
+x_{d}[t] = x_{v}[i] \quad \text{com $i = qt$ tal que $t = 1, 2, ..., n$}\\
+\]
+\end{itemize}
+O que muda nos algoritimos de resampling que os softwares de edição usam (por exemplo, linear ou bicúbico) é o filtro $h[t]$ usado no passo \textbf{Interpolação} \cite{Popescu_2004}. É importante notar que todos os processos feitos para realizar o resampling são lineares, assim, podem ser descritos por sistemas lineares no qual os fatores de interpolação sejam incógnitas. Esse conceito é facilmente estendível para um sinal bidimensional, os passos que o descrevem são os mesmos, correlações periódicas ocorrem de forma análoga.
+\subsection{O Algoritimo de Esperança e Maximização}
+Para determinar se um sinal sofreu resampling, será usado o algoritimo de Esperança e Maximização (EM),
+que é poderoso o suficiente para ao mesmo tempo estimar quais grupos de amostras que estão relacionadas aos vizinhos e como se dá essa relação. Se a relação entre os vizinhos da imagem fosse conhecida, o problema
+seria trivialmente resolvido, pois bastaria achar amostras que não seguem o padrao de relação, mas na prática
+tanto os grupos de amostras (pixels) relacionadas quanto o tipo de relação são desconhecidos,
+logo o EM se encaixa bem no problema \cite{Popescu_2004}.
+Seja $f$ uma matriz bidimensional cujos valores representam uma imagem em escala cinza, assume-se
+que os pixels de $f$ pertencem a um de dois modelos:
+\begin{itemize}
+\item $M_1$, se os pixels são linearmente correlacionados aos vizinhos, isto é são descritos pelo modelo linear:
+\[
+f(x, y) = \sum_{u,v=-N}^{N} \alpha_{u,v}f(x + u, y + v) + n(x, y)
+\]
+onde os parâmetros do modelo são dados por $\overrightarrow{\alpha} = \{\alpha_{u,v}|-N \leq u,v \leq N\}$,
+$N$ é um número natural que descreve o número de vizinhos usado para gerar as correlações entre os pixels,
+$\alpha_{0,0} = 0$ e $n(x, y)$ descreve amostras independentes e igualmente distribuídas de uma distribuição
+gaussiana com média zero e uma variância desconhecida $\sigma^2$\cite{Popescu_2004}.
+\item $M_2$, se os pixels não são correlacionados aos vizinhos, ou seja, se foram gerados por outros processos\cite{Popescu_2004}.
+\end{itemize}
+O EM é um algoritimo iterativo de 2 passos; no passo E (Esperança) é estimada a probabilidade de cada pixel
+pertencer a um dos dois modelos, enquanto que no passo M (Maximização) as formas específicas de correlações entre os pixels é estimada. No passo E, a probabilidade de cada pixel pertencer à determinado modelo é calculada usando a regra de \textit{Bayes}:
+\[
+\begin{array}{c}
+Pr\{f(x, y) \in M_1 | f(x, y)\} = \\
+\frac{Pr\{f(x, y) | f(x, y) \in M_1)\}Pr\{f(x, y) \in M_1)\}}{\sum_{i=1}^2Pr\{f(x, y) | f(x, y) \in M_i)\}Pr\{f(x, y) \in M_i)\}}
+\end{array}
+\]
+Em que as probabilidades $Pr\{f(x, y) \in M_1)\}$ e $Pr{f(x, y) \in M_2)}$ são inicialmente
+assumidas como $\frac{1}{2}$. A probabilidade de um pixel $f(x, y)$ ser gerado por $M_1$ é dada por:
+\[
+\begin{array}{c}
+Pr\{f(x, y) | f(x, y) \in M_1)\} = \\
+\frac{1}{\sigma\sqrt{2\pi}}exp\left[-\frac{1}{2\sigma^2}\left(f(x, y) - \sum_{u,v=-N}^N\alpha_{u,v}f(x + u, y + v)\right)^2\right]
+\end{array}
+\]
+A variância $\sigma^2$ da distribuição gaussiana é estimada no passo M, da seguinte forma:
+\[
+\sigma_{n+1} = \sqrt{\left(\frac{\sum_{x,y}w(x,y)r^2(x,y)}{\sum_{x,y}w(x,y)}\right)}
+\]
+Os pixels que não se adequam ao modelo $M_1$ são assumidos como pertencentes ao modelo $M_2$, uma
+distribuição uniforme é assumida para essa probabilidade, ou seja, $Pr\{f(x, y) | f(x, y) \in M_2)\}$ é igual ao inverso do número de valores possíveis para $f(x, y)$, no nosso caso os valores que representam
+a imagem em escala cinza variam de $0$ à $255$, logo $Pr\{f(x, y) | f(x, y) \in M_2)\} = \frac{1}{256}$.
+O passo E necessita de uma estimativa dos coeficientes de $\overrightarrow{\alpha}$, os quais são
+escolhidos aleatoriamente para a iteração inicial. No passo M, uma nova estimativa de $\overrightarrow{\alpha}$ é calculada a cada iteração usando mínimos quadrados ponderados, ou seja, minimizando a seguinte
+equação:
+\[
+\begin{array}{c}
+E(\overrightarrow{\alpha}) = \\
+\sum_{x,y}w(x,y)\left(f(x,y) - \sum_{u,v=-N}^N\alpha_{u,v}f(x + u, y + v)\right)^2
+\end{array}
+\]
+em que o peso $w(x, y) \equiv Pr\{f(x, y) | f(x, y) \in M_1)\}$ \cite{Popescu_2004}.
+O algoritimo é finalizado quando a diferença normalizada entre o $\overrightarrow{\alpha_n}$ atual e o $\overrightarrow{\alpha_{n-1}}$ da última iteração é menor que um determinado $\epsilon$.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimentos e Discussão}
-Resultados
+Antes de tentar incrementar a solução para o problema, tentamos simplesmente implementar a solução
+já existente, proposta por \CITEONE{Popescu}{Popescu_2004}, no qual a nossa iria se basear. Na tese de doutorado do autor, especificamente no capítulo 2, dedicado à detectar fraudes criadas por \textit{resampling}, é explicado a implementação do algoritimo EM para sinais unidimensionais e é apresentado um pseudo-algoritimo, que também trata somente do caso unidimensional. Segundo o autor, sabendo a implementação unidimensional seria simples deduzir a bidimensional. Partimos para várias tentativas frustradas de implementar o algoritimo em MATLAB na sua versão bidimensional. Não foi tão fácil quanto o esperado.
+
+Depois de certo tempo, recorremos à ajuda de dois mestrandos, eles indicaram um artigo com a implementação do algoritimo em MATLAB feita pelo orientador de Popescu, Hany Farid. Essa implementação, tratava também na versão unidimensional, repetiu-se o argumento de que partindo dela a implemntação bidimensional é facilmente dedutível. Depois, os mestrandos compartilharam conosco o código que eles tinham produzido, para o caso bidimensional, também programado em MATLAB. A implementação deles tinha o mesmo problema que a nossa teve depois.
+
+Pesquisando mais um pouco, descobrimos que na mesma tese de doutorado o capítulo 3 abordava outro algoritimo de detecção de fraudes que também utilizava o EM, neste era apresentado o algoritimo bidimensional e o seu respectivo pseudo-código. Seguimos as instruções e implementamos o algoritimo, todavia não conseguimos resultados satisfatórios, os valores não convergiam e o algoritimo falhava ao tentar estimar os mapas de probabilidade da imagem o os coeficientes de relação $\overrightarrow{\alpha}$. Tentamos reimplementar diversas vezes o algoritimo, reescrevendo do zero, revisando e testando de várias formas diferentes (usando imagens diferentes e alterando constantes), no entanto não conseguimos atingir os resultados que aparecem na tese de doutorado que estudamos.
+
+Especificamente: tentamos usar imagens aleatórias (geradas dinamicamente), imagens geradas com coeficientes
+de correlação conhecidos, imagens comuns, imagens redimensionadas e rotacionadas, com interpolação bicúbica
+(usada pelo autor) e com interpolação linear (a mais simples), tentamos fixar o valor da variância gaussiana
+$\sigma$ (feito pelo autor) e também deixá-la ser calculada a cada iteração, tentamos diversos valores
+iniciais para a variância gaussiana $\sigma$, além de valores diferentes para a vizinhança $N$, tentamos
+formas diferentes de calcular o peso $Pr\{f(x, y) | f(x, y) \in M_1)\}$ e diferente formas para resolver o
+sistema de equações dos mínimos quadrados ponderados (assumindo $\alpha_{u,v}$ como constante e como
+variável). Assistimos também a evolução do mapa de probabilidade para cada iteração, confirmando que de
+fato o mapa não estava convergindo.
+
+Um possível ponto que pode ter causado o defeito de nosso algoritimo é a solução dos mínimos quadrados
+ponderados. O autor não explica o método explícito que ele usa para resolver o sistema de equações e o
+desenvolvimento do sistema termina em um sistema confuso. Esse passo é muito importante para o algoritimo, pois com ele se encontra o $\overrightarrow{\alpha}$ da iteração seguinte. No pseudo-algoritimo esse passo é simplesmente descrito como a solução do sistema de equações. Interpretamos as palavras dessa parte do artigo com duas abordagens diferentes, entretanto nenhuma delas trouxe um bom resultado.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusões e Trabalho Futuro}
-Os finalmentes
-
+\section{Conclusões}
+Apesar dos nossos esforços, não conseguimos implementar uma das soluções que queríamos.
+É interessante destacar que procuramos por outros artigos que usassem essa solução para algo,
+não encontramos nenhum artigo que o usasse e mostrasse como usá-lo, ou como implementá-lo. O máximo
+que encontramos foi um artigo de \CITEN{Li}{Shu_Ping} citando a solução de \CITEONE{Popescu}{Popescu_2004} 
+e mostrando resultados obtidos pelo algoritimo.
 
 %%% References %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 {\small
