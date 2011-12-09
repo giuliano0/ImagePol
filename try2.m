@@ -13,8 +13,8 @@
 
 clear;
 
-%f = double(imread('sample_10dg.png'));
-load('f_test.mat');
+f = double(imread('sample_10dg.png'));
+%load('f_test.mat');
 
 % Normalizando a imagem para [0;1]
 % Coloquei esse passo para observar os valores de saída quando a entrada tá
@@ -24,9 +24,11 @@ load('f_test.mat');
 
 % constantes de controle
 step = 1;
-epsilon = 0.01; % condição de parada. Arbitrária
+max_steps = 20;
+converged = false;
+epsilon = 0.1; % condição de parada. Arbitrária
 L = length(f); % estamos usando imagens quadradas
-N = 1; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
+N = 2; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
 neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
 % DEBUG
 least_normdiff = 100; % guarda a menor norma encontrada no processo
@@ -35,16 +37,13 @@ least_normdiff = 100; % guarda a menor norma encontrada no processo
 % inicializa alpha aleatório
 alpha = rand(neigh, neigh);
 alpha(1 + N, 1 + N) = 0;
-alpha = alpha / sum(sum(alpha)); % para garantir que os oeficientes somem 1
+alpha = alpha / sum(sum(alpha)); % para garantir que os coeficientes somem 1
 
 % pré-inicializa alpha_new (o matlab recomenda =P)
 alpha_new = zeros(neigh, neigh);
 
-max_steps = 10;
-converged = false;
-
 % parâmetros do EM
-sigma = 120; % variancia da gaussiana fixada via paper
+sigma = 1.0; % variancia da gaussiana fixada via paper
 delta = 1/256; % delta uniforme; representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
@@ -62,10 +61,10 @@ while (step <= max_steps && ~converged)
     % Probabilidade Pr{f(x,y) pert. M1 | f(x, y)}
     P =  exp( -((r.^2) / (2 * sigma^2)) ) / (sigma * sqrt(2*pi));
     % Probabilidade Pr{f(x,y) | f(x,y) pert. M1}
-    w = P ./ (P + delta);
+     w = P ./ (P + delta);
     
-    disp('E step completed');
-    pause(0.25);
+    %disp('E step completed');
+    %pause(0.25);
     
     % "interlude": padding de f e w, para o passo M
     z = zeros(length(f), N);
@@ -81,13 +80,15 @@ while (step <= max_steps && ~converged)
     clear z;
     
     % DEBUG: calcula IBAGENS de P e W se alguém quiser vê-las.
-    P_img = P - min(min(P));
-    P_img = uint8(255*(P_img / max(max(P))));
+    P_img = uint8(255*P);
+    %P_img = P - min(min(P));
+    %P_img = uint8(255*(P_img / max(max(P))));
     name = sprintf('P_and_w_images/P%d.png', step);
     imwrite(P_img, name);
     
-    w_img = w - min(min(w));
-    w_img = uint8(255*(w_img / max(max(w_img))));
+    w_img = uint8(255*w);
+    %w_img = w - min(min(w));
+    %w_img = uint8(255*(w_img / max(max(w_img))));
     name = sprintf('P_and_w_images/w%d.png', step);
     imwrite(w_img, name);
     
@@ -142,13 +143,13 @@ while (step <= max_steps && ~converged)
     
     alpha_new = linsolve(A, B);
     
-    fprintf('alpha_new mid coefficient value was %d. Now it is being set to 0.\n', alpha_new(N+1, N+1));
+    %fprintf('alpha_new mid coefficient value was %d. Now it is being set to 0.\n', alpha_new(N+1, N+1));
     
     % solução noob pra problema sério
     alpha_new(N+1, N+1) = 0;
     
-    disp('M step competed');
-    pause(0.25);
+    %disp('M step competed');
+    %pause(0.25);
     
     % condição de parada
     normdiff = norm(alpha_new - alpha);
@@ -174,11 +175,13 @@ while (step <= max_steps && ~converged)
     sigma = sqrt(sum(sum(aux)) / sum(sum(w)));
     clear aux;
     
+    fprintf('sigma = %d\n', sigma);
+    
     %disp(sprintf('step %d completed.', step));
-    fprintf('step %d completed. Norm of diference between alphas is %d\n', step, normdiff);
+    %fprintf('step %d completed. Norm of diference between alphas is %d\n', step, normdiff);
     step = step + 1;
     
-    pause(0.5);
+    %pause(0.5);
 end
 
 if (converged)
