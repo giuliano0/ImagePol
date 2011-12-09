@@ -27,7 +27,7 @@
 %%% Title and authors %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{O que os olhos não veem \\ \large Estudo de um algorítimo para detectar imagens digitais manipuladas}
 \author{ André Guaraldo\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra101487@students.ic.unicamp.br}}\\
-Giuliano Pinheiro\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra108579@students.ic.unicamp.br}}\\
+Giuliano R. Pinheiro\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra108579@students.ic.unicamp.br}}\\
 Oscar Esgalha\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{ra108231@students.ic.unicamp.br}}\\
 Anderson Rocha\thanks{Is with the Institute of Computing, University of Campinas (Unicamp). \textbf{Contact}: \tt\small{anderson.rocha@ic.unicamp.br}}
 }
@@ -79,8 +79,7 @@ Imagens fraudadas também aparecem na mídia com o intuito de mostrar uma situação
 perspectiva, como aconteceu com o fotógrafo Brian Walski em 2003 no jornal \textit{Los Angeles Times} \cite{Rocha_Goldenstein_2010}. Na montagem do fotógrafo (ver \textbf{Figura 1}) o soldado britânico parece estar orientando um  iraquiano com uma criança no colo, mas esse momento nunca aconteceu, a foto que apareceu
 no jornal foi uma composição de outras duas fotos. Assim que a fraude foi descoberta, o fotógrafo foi demitido \cite{Rocha_Goldenstein_2010}.
 
-Outro exemplo, é o caso da ficha criminal de Dilma Rousseff, que no dia 5 de abril de 2009 saiu no jornal Folha de São Paulo (ver \textbf{Figura 2}). Segundo a ficha, a então chefe de estado teve participação ativa na resistência durante o regime militar brasileiro, planejando roubos e sequestros. Afirmou-se que o documento foi encontrado no arquivo público de São Paulo, portanto, que era autêntico. Entretanto, uma análise forense revelou que a imagem da ficha não foi digitalizada, além de possuir características típicas de imagens criadas em computador e a tipografia não possuir características inerentes à gerada por uma
-máquina de escrever, counclui-se que a ficha era falsa \cite{Rocha_et_al_2011}.
+Outro exemplo, é o caso da suposta ficha criminal de Dilma Rousseff, que no dia 5 de abril de 2009 saiu no jornal Folha de São Paulo (ver \textbf{Figura 2}). Segundo a ficha, a então chefe de estado teve participação ativa na resistência durante o regime militar brasileiro, planejando roubos e sequestros. Afirmou-se que o documento foi encontrado no arquivo público de São Paulo, portanto, que era autêntico. Entretanto, uma análise forense revelou que a imagem da ficha não foi digitalizada no local, além de possuir características típicas de imagens criadas em computador e a tipografia não possuir características inerentes a uma máquina de escrever, counclui-se que a ficha era falsa \cite{Rocha_et_al_2011}.
 \begin{figure}
 \begin{center}
 	\includegraphics[width=0.99\columnwidth]{pics/Dilma}
@@ -124,7 +123,7 @@ para se identificar se uma imagem é verdadeira. Dentre eles está o método para i
 por \textit{resampling} no qual este trabalho se baseia. Dentre as outras técnicas abordadas pelo
 autor, está a detecção de dupla compressão JPEG, que pode identificar se houve uma colagem de duas
 ou mais imagens JPEGs diferentes, a detecção de regiões duplicadas da imagem (cópia-colagem) e
-a verificação da interpolação de cores da imagem. Quanto á última, a maioria das câmeras digitais
+a verificação da interpolação de cores da imagem. Quanto à última, a maioria das câmeras digitais
 não capturam todos os três canais de cores ao mesmo tempo (vermelho, verde e azul), mas apenas uma
 cor para cada pixel e depois, através de interpolação dos valores, as cores finais são calculadas.
 O método proposto consiste em tentar estimar como as cores foram interpoladas e tentar achar
@@ -169,7 +168,7 @@ que os pixels de $f$ pertencem a um de dois modelos:
 \[
 f(x, y) = \sum_{u,v=-N}^{N} \alpha_{u,v}f(x + u, y + v) + n(x, y)
 \]
-onde os parâmetros do modelo são dados por $\overrightarrow{\alpha} = \{\alpha_{u,v}|-N \leq u,v \leq N\}$,
+onde os parâmetros do modelo são dados por $\vec{\alpha} = \{\alpha_{u,v}|-N \leq u,v \leq N\}$,
 $N$ é um número natural que descreve o número de vizinhos usado para gerar as correlações entre os pixels,
 $\alpha_{0,0} = 0$ e $n(x, y)$ descreve amostras independentes e igualmente distribuídas de uma distribuição
 gaussiana com média zero e uma variância desconhecida $\sigma^2$\cite{Popescu_2004}.
@@ -198,17 +197,17 @@ A variância $\sigma^2$ da distribuição gaussiana é estimada no passo M, da segui
 Os pixels que não se adequam ao modelo $M_1$ são assumidos como pertencentes ao modelo $M_2$, uma
 distribuição uniforme é assumida para essa probabilidade, ou seja, $Pr\{f(x, y) | f(x, y) \in M_2)\}$ é igual ao inverso do número de valores possíveis para $f(x, y)$, no nosso caso os valores que representam
 a imagem em escala cinza variam de $0$ à $255$, logo $Pr\{f(x, y) | f(x, y) \in M_2)\} = \frac{1}{256}$.
-O passo E necessita de uma estimativa dos coeficientes de $\overrightarrow{\alpha}$, os quais são
-escolhidos aleatoriamente para a iteração inicial. No passo M, uma nova estimativa de $\overrightarrow{\alpha}$ é calculada a cada iteração usando mínimos quadrados ponderados, ou seja, minimizando a seguinte
+O passo E necessita de uma estimativa dos coeficientes de $\vec{\alpha}$, os quais são
+escolhidos aleatoriamente para a iteração inicial. No passo M, uma nova estimativa de $\vec{\alpha}$ é calculada a cada iteração usando mínimos quadrados ponderados, ou seja, minimizando a seguinte
 equação:
 \[
 \begin{array}{c}
-E(\overrightarrow{\alpha}) = \\
+E(\vec{\alpha}) = \\
 \sum_{x,y}w(x,y)\left(f(x,y) - \sum_{u,v=-N}^N\alpha_{u,v}f(x + u, y + v)\right)^2
 \end{array}
 \]
 em que o peso $w(x, y) \equiv Pr\{f(x, y) | f(x, y) \in M_1)\}$ \cite{Popescu_2004}.
-O algoritimo é finalizado quando a diferença normalizada entre o $\overrightarrow{\alpha_n}$ atual e o $\overrightarrow{\alpha_{n-1}}$ da última iteração é menor que um determinado $\epsilon$.
+O algoritimo é finalizado quando a diferença normalizada entre o $\vec{\alpha_n}$ atual e o $\vec{\alpha_{n-1}}$ da última iteração é menor que um determinado $\epsilon$.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimentos e Discussão}
@@ -217,12 +216,12 @@ já existente, proposta por \CITEONE{Popescu}{Popescu_2004}, no qual a nossa iria
 
 Depois de certo tempo, recorremos à ajuda de dois mestrandos, eles indicaram um artigo com a implementação do algoritimo em MATLAB feita pelo orientador de Popescu, Hany Farid. Essa implementação, tratava também na versão unidimensional, repetiu-se o argumento de que partindo dela a implemntação bidimensional é facilmente dedutível. Depois, os mestrandos compartilharam conosco o código que eles tinham produzido, para o caso bidimensional, também programado em MATLAB. A implementação deles tinha o mesmo problema que a nossa teve depois.
 
-Pesquisando mais um pouco, descobrimos que na mesma tese de doutorado o capítulo 3 abordava outro algoritimo de detecção de fraudes que também utilizava o EM, neste era apresentado o algoritimo bidimensional e o seu respectivo pseudo-código. Seguimos as instruções e implementamos o algoritimo, todavia não conseguimos resultados satisfatórios, os valores não convergiam e o algoritimo falhava ao tentar estimar os mapas de probabilidade da imagem o os coeficientes de relação $\overrightarrow{\alpha}$. Tentamos reimplementar diversas vezes o algoritimo, reescrevendo do zero, revisando e testando de várias formas diferentes (usando imagens diferentes e alterando constantes), no entanto não conseguimos atingir os resultados que aparecem na tese de doutorado que estudamos.
+Pesquisando mais um pouco, descobrimos que na mesma tese de doutorado o capítulo 3 abordava outro algoritimo de detecção de fraudes que também utilizava o EM, neste era apresentado o algoritimo bidimensional e o seu respectivo pseudo-código. Seguimos as instruções e implementamos o algoritimo, todavia não conseguimos resultados satisfatórios, os valores não convergiam e o algoritimo falhava ao tentar estimar os mapas de probabilidade da imagem o os coeficientes de relação $\vec{\alpha}$. Tentamos reimplementar diversas vezes o algoritimo, reescrevendo do zero, revisando e testando de várias formas diferentes (usando imagens diferentes e alterando constantes), no entanto não conseguimos atingir os resultados que aparecem na tese de doutorado que estudamos.
 
 Especificamente: tentamos usar imagens aleatórias (geradas dinamicamente), imagens geradas com coeficientes
 de correlação conhecidos, imagens comuns, imagens redimensionadas e rotacionadas, com interpolação bicúbica
 (usada pelo autor) e com interpolação linear (a mais simples), tentamos fixar o valor da variância gaussiana
-$\sigma$ (feito pelo autor) e também deixá-la ser calculada a cada iteração, tentamos diversos valores
+$\sigma$ e também deixá-la ser calculada a cada iteração (feito pelo autor), tentamos diversos valores
 iniciais para a variância gaussiana $\sigma$, além de valores diferentes para a vizinhança $N$, tentamos
 formas diferentes de calcular o peso $Pr\{f(x, y) | f(x, y) \in M_1)\}$ e diferente formas para resolver o
 sistema de equações dos mínimos quadrados ponderados (assumindo $\alpha_{u,v}$ como constante e como
@@ -231,7 +230,7 @@ fato o mapa não estava convergindo.
 
 Um possível ponto que pode ter causado o defeito de nosso algoritimo é a solução dos mínimos quadrados
 ponderados. O autor não explica o método explícito que ele usa para resolver o sistema de equações e o
-desenvolvimento do sistema termina em um sistema confuso. Esse passo é muito importante para o algoritimo, pois com ele se encontra o $\overrightarrow{\alpha}$ da iteração seguinte. No pseudo-algoritimo esse passo é simplesmente descrito como a solução do sistema de equações. Interpretamos as palavras dessa parte do artigo com duas abordagens diferentes, entretanto nenhuma delas trouxe um bom resultado.
+desenvolvimento do sistema termina em um sistema confuso. Esse passo é muito importante para o algoritimo, pois com ele se encontra o $\vec{\alpha}$ da iteração seguinte. No pseudo-algoritimo esse passo é simplesmente descrito como a solução do sistema de equações. Interpretamos as palavras dessa parte do artigo com duas abordagens diferentes, entretanto nenhuma delas trouxe um bom resultado.
 
 %%% Add section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusões}
