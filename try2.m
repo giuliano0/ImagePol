@@ -13,7 +13,8 @@
 
 clear;
 
-f = double(imread('sample_10dg.png'));
+%f = double(imread('sample_10dg.png'));
+load('f_test.mat');
 
 % Normalizando a imagem para [0;1]
 % Coloquei esse passo para observar os valores de saída quando a entrada tá
@@ -25,7 +26,7 @@ f = double(imread('sample_10dg.png'));
 step = 1;
 epsilon = 0.01; % condição de parada. Arbitrária
 L = length(f); % estamos usando imagens quadradas
-N = 2; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
+N = 1; % tamanho da vizinhança = |[-N; N]| = 2N+1, (|.| é o número de inteiros no intervalo)
 neigh = 2*N + 1; % constante para facilitar o cálculo de vizinhança
 % DEBUG
 least_normdiff = 100; % guarda a menor norma encontrada no processo
@@ -43,7 +44,7 @@ max_steps = 10;
 converged = false;
 
 % parâmetros do EM
-sigma = 0.0075; % variancia da gaussiana fixada via paper
+sigma = 120; % variancia da gaussiana fixada via paper
 delta = 1/256; % delta uniforme; representa Pr{f(x,y)|f(x,y) pert. M2}
 
 %pause;
@@ -77,14 +78,18 @@ while (step <= max_steps && ~converged)
     z = zeros(length(w) + 2*N, N);
     pw = cat(2, z, pw', z);
     
-    % DEBUG: calcula IBAGENS de P e W se alguém quiser vê-las.
-    %P_img = P - min(min(P));
-    %P_img = int8(256*(P_img / max(max(P))));
-    %imshow(P_img);
+    clear z;
     
-    %w_img = w - min(min(w));
-    %w_img = int8(256*(w_img / max(max(w_img))));
-    %imshow(w_img);
+    % DEBUG: calcula IBAGENS de P e W se alguém quiser vê-las.
+    P_img = P - min(min(P));
+    P_img = uint8(255*(P_img / max(max(P))));
+    name = sprintf('P_and_w_images/P%d.png', step);
+    imwrite(P_img, name);
+    
+    w_img = w - min(min(w));
+    w_img = uint8(255*(w_img / max(max(w_img))));
+    name = sprintf('P_and_w_images/w%d.png', step);
+    imwrite(w_img, name);
     
     %disp('Paused before M step.');
     %pause();
